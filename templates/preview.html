@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statement Preview - Bank Statement Analyzer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --secondary-color: #6366f1;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --dark-color: #1f2937;
+      --light-color: #f8fafc;
+      --border-radius: 12px;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h2 {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .breadcrumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius);
+      padding: 0.5rem 1rem;
+      margin-top: 1rem;
+    }
+
+    .breadcrumb-item a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .breadcrumb-item.active {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .dashboard-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      color: white;
+      text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-card.debit {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    }
+
+    .stat-card.credit {
+      background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+    }
+
+    .stat-card.balance {
+      background: linear-gradient(135deg, #45b7d1 0%, #96c93d 100%);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .stat-icon {
+      font-size: 2.5rem;
+      opacity: 0.3;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background: var(--dark-color);
+      color: white;
+      border: none;
+      font-weight: 600;
+      padding: 1rem;
+    }
+
+    .table tbody tr {
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .table tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+    }
+
+    .comment-box {
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .comment-box:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+      margin-bottom: 3rem; /* Add more space below buttons */
+    }
+
+    .btn {
+      border-radius: var(--border-radius);
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-outline-success {
+      border-color: var(--success-color);
+      color: var(--success-color);
+    }
+
+    .btn-outline-success:hover {
+      background: var(--success-color);
+      border-color: var(--success-color);
+    }
+
+    .btn-outline-info {
+      border-color: #06b6d4;
+      color: #06b6d4;
+    }
+
+    .btn-outline-info:hover {
+      background: #06b6d4;
+      border-color: #06b6d4;
+    }
+
+    .btn-outline-secondary {
+      border-color: #6b7280;
+      color: #6b7280;
+    }
+
+    .btn-outline-secondary:hover {
+      background: #6b7280;
+      border-color: #6b7280;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    }
+
+    .back-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: var(--border-radius);
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .scrollable-table {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .scrollable-table::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    .preview-badge {
+      background: linear-gradient(135deg, var(--warning-color), #f97316);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .stat-card {
+        margin-bottom: 1rem;
+      }
+    }
+
+    .page-container {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .add-transaction-fixed {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .add-transaction-fixed .btn {
+      min-width: 180px;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+
+    .below-table-controls {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .add-transaction-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .add-transaction-form input,
+    .add-transaction-form select {
+      flex: 1 1 150px;
+      min-width: 120px;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .add-transaction-fixed {
+        justify-content: stretch;
+      }
+      .add-transaction-form {
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+      .action-buttons {
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2><i class="fas fa-file-invoice-dollar me-2"></i>Statement Preview</h2>
+        <a href="/" class="back-button">
+          <i class="fas fa-arrow-left me-2"></i>Back to Upload
+        </a>
+      </div>
+      <nav class="breadcrumb">
+        <a class="breadcrumb-item" href="/">Upload</a>
+        <span class="breadcrumb-item active">Preview</span>
+        <span class="breadcrumb-item">Analysis</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="preview-badge">
+      <i class="fas fa-eye me-2"></i>Preview Mode - First 10 Transactions
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+      <div class="col-md-4 mb-3">
+        <div class="stat-card debit position-relative">
+          <div class="stat-icon">
+            <i class="fas fa-arrow-down"></i>
+          </div>
+          <div class="stat-value">₹0.00</div>
+          <div class="stat-label">Total Debit (Preview)</div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="stat-card credit position-relative">
+          <div class="stat-icon">
+            <i class="fas fa-arrow-up"></i>
+          </div>
+          <div class="stat-value">₹0.00</div>
+          <div class="stat-label">Total Credit (Preview)</div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="stat-card balance position-relative">
+          <div class="stat-icon">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div class="stat-value">₹0.00</div>
+          <div class="stat-label">Latest Balance</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <form id="addTransactionForm" class="row g-2 align-items-end">
+          <div class="col-md-2">
+            <label class="form-label">Date</label>
+            <input type="text" class="form-control" name="date" placeholder="DD MMM YYYY or DD/MM/YYYY" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Details</label>
+            <input type="text" class="form-control" name="details" placeholder="Transaction details" required>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Ref No./Cheque No</label>
+            <input type="text" class="form-control" name="ref_no" placeholder="Ref/Cheque No">
+          </div>
+          <div class="col-md-1">
+            <label class="form-label">Debit</label>
+            <input type="number" step="0.01" class="form-control" name="debit" placeholder="0.00">
+          </div>
+          <div class="col-md-1">
+            <label class="form-label">Credit</label>
+            <input type="number" step="0.01" class="form-control" name="credit" placeholder="0.00">
+          </div>
+          <div class="col-md-1">
+            <label class="form-label">Balance</label>
+            <input type="number" step="0.01" class="form-control" name="balance" placeholder="0.00">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Comment</label>
+            <input type="text" class="form-control" name="comment" placeholder="Comment">
+          </div>
+          <div class="col-md-12 mt-2">
+            <button type="submit" class="btn btn-success"><i class="fas fa-plus me-2"></i>Add Transaction</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <a href="/export/xlsx" class="btn btn-outline-success">
+        <i class="fas fa-file-excel me-2"></i>Export to Excel
+      </a>
+      <a href="/export/csv" class="btn btn-outline-info">
+        <i class="fas fa-file-csv me-2"></i>Export to CSV
+      </a>
+      <button onclick="window.print()" class="btn btn-outline-secondary">
+        <i class="fas fa-print me-2"></i>Print
+      </button>
+      <a href="/analysis" class="btn btn-primary ms-auto">
+        <i class="fas fa-chart-line me-2"></i>View Full Analysis
+      </a>
+    </div>
+    <div class="mb-3">
+      <button id="deleteSelectedBtn" class="btn btn-danger" disabled><i class="fas fa-trash me-2"></i>Delete Selected</button>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="table-container">
+      <div class="scrollable-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="selectAll"></th>
+              <th><i class="fas fa-calendar me-2"></i>Date</th>
+              <th><i class="fas fa-info-circle me-2"></i>Details</th>
+              <th><i class="fas fa-hashtag me-2"></i>Ref No</th>
+              <th><i class="fas fa-minus-circle me-2"></i>Debit</th>
+              <th><i class="fas fa-plus-circle me-2"></i>Credit</th>
+              <th><i class="fas fa-balance-scale me-2"></i>Balance</th>
+              <th><i class="fas fa-comment me-2"></i>Comment</th>
+              <th><i class="fas fa-trash me-2"></i>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data %}
+            <tr data-index="{{ loop.index0 }}">
+              <td><input type="checkbox" class="row-checkbox" data-index="{{ loop.index0 }}"></td>
+              <td>{{ row["Date"] }}</td>
+              <td>{{ row["Details"] }}</td>
+              <td>{{ row["Ref No./Cheque No"] }}</td>
+              <td>
+                {% if row["Debit"] %}
+                  <span class="text-danger fw-bold">{{ row["Debit"] }}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if row["Credit"] %}
+                  <span class="text-success fw-bold">{{ row["Credit"] }}</span>
+                {% endif %}
+              </td>
+              <td class="fw-bold">{{ row["Balance"] }}</td>
+              <td>
+                <input type="text" class="form-control form-control-sm comment-box" 
+                       data-index="{{ loop.index0 }}" 
+                       value="{{ row["Comment"] }}" 
+                       placeholder="Add comment...">
+              </td>
+              <td>
+                <button class="btn btn-sm btn-danger delete-btn" data-index="{{ loop.index0 }}" title="Delete Transaction">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Calculate preview stats
+    document.addEventListener('DOMContentLoaded', function() {
+      calculatePreviewStats();
+    });
+
+    function calculatePreviewStats() {
+      const rows = document.querySelectorAll('tbody tr');
+      let totalDebit = 0;
+      let totalCredit = 0;
+      let latestBalance = 0;
+
+      rows.forEach(row => {
+        const debitCell = row.cells[3].textContent.trim();
+        const creditCell = row.cells[4].textContent.trim();
+        const balanceCell = row.cells[5].textContent.trim();
+
+        if (debitCell) {
+          totalDebit += parseFloat(debitCell.replace(/[^0-9.-]+/g, '')) || 0;
+        }
+        if (creditCell) {
+          totalCredit += parseFloat(creditCell.replace(/[^0-9.-]+/g, '')) || 0;
+        }
+        if (balanceCell) {
+          latestBalance = parseFloat(balanceCell.replace(/[^0-9.-]+/g, '')) || 0;
+        }
+      });
+
+      // Update stat cards
+      document.querySelector('.stat-card.debit .stat-value').textContent = '₹' + totalDebit.toFixed(2);
+      document.querySelector('.stat-card.credit .stat-value').textContent = '₹' + totalCredit.toFixed(2);
+      document.querySelector('.stat-card.balance .stat-value').textContent = '₹' + latestBalance.toFixed(2);
+    }
+
+    // Comment update functionality
+    document.querySelectorAll('.comment-box').forEach(input => {
+      input.addEventListener('change', function() {
+        const button = this;
+        button.style.opacity = '0.5';
+        
+        fetch('/update_comment', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: `index=${this.dataset.index}&comment=${encodeURIComponent(this.value)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          button.style.opacity = '1';
+          if (data.success) {
+            button.style.borderColor = 'var(--success-color)';
+            setTimeout(() => {
+              button.style.borderColor = '';
+            }, 2000);
+          }
+        })
+        .catch(error => {
+          button.style.opacity = '1';
+          button.style.borderColor = 'var(--danger-color)';
+          console.error('Error updating comment:', error);
+        });
+      });
+    });
+
+    // Add JS for delete functionality
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const row = this.closest('tr');
+        const index = this.dataset.index;
+        if (confirm('Are you sure you want to delete this transaction?')) {
+          fetch('/delete_transaction', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `index=${index}`
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              row.remove();
+            } else {
+              alert('Delete failed: ' + (data.error || 'Unknown error'));
+            }
+          })
+          .catch(() => alert('Delete failed: Network error'));
+        }
+      });
+    });
+
+    document.getElementById('addTransactionForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = this;
+      const formData = new FormData(form);
+      fetch('/add_transaction', {
+        method: 'POST',
+        body: new URLSearchParams([...formData])
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Add failed: ' + (data.error || 'Unknown error'));
+        }
+      })
+      .catch(() => alert('Add failed: Network error'));
+    });
+
+    // Multi-select delete logic
+    const selectAll = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+
+    selectAll.addEventListener('change', function() {
+      rowCheckboxes.forEach(cb => cb.checked = this.checked);
+      deleteSelectedBtn.disabled = !Array.from(rowCheckboxes).some(cb => cb.checked);
+    });
+    rowCheckboxes.forEach(cb => {
+      cb.addEventListener('change', function() {
+        deleteSelectedBtn.disabled = !Array.from(rowCheckboxes).some(cb => cb.checked);
+        if (!this.checked) selectAll.checked = false;
+      });
+    });
+    deleteSelectedBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const indices = Array.from(rowCheckboxes).filter(cb => cb.checked).map(cb => parseInt(cb.dataset.index));
+      if (indices.length === 0) return;
+      if (!confirm('Are you sure you want to delete the selected transactions?')) return;
+      fetch('/delete_transactions', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({indices: indices})
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Remove rows from table
+          indices.forEach(idx => {
+            const row = document.querySelector(`tr[data-index='${idx}']`);
+            if (row) row.remove();
+          });
+          // Optionally update totals if present
+          if (data.summary) {
+            if (document.querySelector('.stat-card.debit .stat-value'))
+              document.querySelector('.stat-card.debit .stat-value').textContent = '₹' + data.summary.debit.toFixed(2);
+            if (document.querySelector('.stat-card.credit .stat-value'))
+              document.querySelector('.stat-card.credit .stat-value').textContent = '₹' + data.summary.credit.toFixed(2);
+            if (document.querySelector('.stat-card.balance .stat-value'))
+              document.querySelector('.stat-card.balance .stat-value').textContent = '₹' + data.summary.balance.toFixed(2);
+            if (document.getElementById('transactionCount'))
+              document.getElementById('transactionCount').textContent = data.summary.transaction_count;
+          }
+          deleteSelectedBtn.disabled = true;
+          selectAll.checked = false;
+        } else {
+          alert('Delete failed: ' + (data.error || 'Unknown error'));
+        }
+      })
+      .catch(() => alert('Delete failed: Network error'));
+    });
+
+    // Print styles
+    const printStyles = `
+      @media print {
+        .header, .action-buttons, .breadcrumb, .back-button { display: none !important; }
+        .table-container { box-shadow: none !important; }
+        .scrollable-table { max-height: none !important; overflow: visible !important; }
+        body { background: white !important; }
+      }
+    `;
+    
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = printStyles;
+    document.head.appendChild(styleSheet);
+  </script>
+</body>
+</html>
